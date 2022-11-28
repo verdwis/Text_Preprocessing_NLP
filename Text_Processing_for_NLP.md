@@ -145,4 +145,233 @@ print(pisah)
 ['rumah', 'idaman', 'adalah', 'rumah', 'yang', 'bersih']
 ```
 
-https://ksnugroho.medium.com/dasar-text-preprocessing-dengan-python-a4fa52608ffe
+Sayangnya, tahap tokenizing tidak sesederhana itu. Dari output kode diatas kita akan mengolah kata “rumah” dan “rumah” sebagai 2 entitas yang berbeda. Permasalahan ini tentunya akan mempengaruhi hasil dari analisa teks itu sendiri. Untuk mengatasi masalah ini kita dapat menggunakan modul dari NLTK yang sudah diinstal sebelumnya.
+
+## Tokenizing kata
+Sebuah kalimat atau data dapat dipisah menjadi kata-kata dengan kelas word_tokenize() pada modul NLTK.
+
+```
+# impor word_tokenize dari modul nltk
+from nltk.tokenize import word_tokenize 
+ 
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online."
+ 
+tokens = nltk.tokenize.word_tokenize(kalimat.translate(str.maketrans('','',string.punctuation)).lower())
+print(tokens)
+```
+
+**Output :**
+
+```
+['andi', 'kerap', 'melakukan', 'transaksi', 'rutin', 'secara', 'daring', 'atau', 'online']
+```
+
+
+Kita juga bisa mendapatkan informasi frekuensi kemunculan setiap token dengan kelas FreqDist() yang sudah tersedia pada modul NLTK.
+
+```
+from nltk.tokenize import word_tokenize
+from nltk.probability import FreqDist
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+kalimat = kalimat.translate(str.maketrans('','',string.punctuation)).lower()
+ 
+tokens = nltk.tokenize.word_tokenize(kalimat)
+kemunculan = nltk.FreqDist(tokens)
+print(kemunculan.most_common())
+```
+
+**Output :**
+
+```
+[('andi', 2), ('online', 2), ('kerap', 1), ('melakukan', 1), ('transaksi', 1), ('rutin', 1), ('secara', 1), ('daring', 1), ('atau', 1), ('menurut', 1), ('belanja', 1), ('lebih', 1), ('praktis', 1), ('murah', 1)]
+```
+
+Untuk menggambarkan ke dalam bentuk grafik, kita perlu menginstall library Matplotlib.
+
+```
+import matplotlib.pyplot as plt
+kemunculan.plot(30,cumulative=False)
+plt.show()
+```
+
+**Output :**
+
+<img width="384" alt="image" src="https://user-images.githubusercontent.com/101826376/204218882-fc64c6ab-9086-4b6d-9ff2-4d05458300e8.png">
+
+
+## Tokenizing kalimat
+Prinsip yang sama dapat diterapkan untuk memisahkan kalimat pada paragraf. Anda dapat menggunkan kelas sent_tokenize() pada modul NLTK. Saya telah menambahkan kalimat pada contoh seperti dibawah ini :
+
+```
+# impor sent_tokenize dari modul nltk
+from nltk.tokenize import sent_tokenize
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+ 
+tokens = nltk.tokenize.sent_tokenize(kalimat)
+print(tokens)
+```
+
+**Output :**
+
+```
+['Andi kerap melakukan transaksi rutin secara daring atau online.', 'Menurut Andi belanja online lebih praktis & murah.']
+```
+
+# 3. Filtering (Stopword Removal)
+
+Filtering adalah tahap mengambil kata-kata penting dari hasil token dengan menggunakan algoritma stoplist (membuang kata kurang penting) atau wordlist (menyimpan kata penting).
+
+## Filtering dengan NLTK
+
+```
+from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+ 
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+kalimat = kalimat.translate(str.maketrans('','',string.punctuation)).lower()
+ 
+tokens = word_tokenize(kalimat)
+listStopword =  set(stopwords.words('indonesian'))
+ 
+removed = []
+for t in tokens:
+    if t not in listStopword:
+        removed.append(t)
+ 
+print(removed)
+```
+
+**Output :**
+
+```
+['andi', 'kerap', 'transaksi', 'rutin', 'daring', 'online', 'andi', 'belanja', 'online', 'praktis', 'murah']
+```
+
+## Filtering dengan sastrawi
+Selain untuk stemming, library Sastrawi juga mendukung proses filtering. Kita dapat menggunakan stopWordRemoverFactory dari modul sastrawi.
+
+Untuk melihat daftar stopword yang telah didefinisikan dalam library Sastrawi dapat menggunakan kode berikut :
+
+```
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+factory = StopWordRemoverFactory()
+stopwords = factory.get_stop_words()
+print(stopwords)
+```
+
+Kode diatas akan menampikan stopword yang tersedia di library Sastrawi. Prosos filtering pada Sastrawi dapat dilihat pada baris kode dibawah :
+
+```
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
+from nltk.tokenize import word_tokenize
+factory = StopWordRemoverFactory()
+stopword = factory.create_stop_word_remover()
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+kalimat = kalimat.translate(str.maketrans('','',string.punctuation)).lower()
+stop = stopword.remove(kalimat)
+tokens = nltk.tokenize.word_tokenize(stop)
+print(tokens)
+```
+
+**Output :**
+
+```
+['andi', 'kerap', 'transaksi', 'rutin', 'daring', 'online', 'andi', 'belanja', 'online', 'praktis', 'murah']
+```
+
+Kita dapat menambah atau mengurangi kata pada daftar stopword sesuai dengan kebutuhan analisa. Pada dasarnya daftar stopword pada library Sastrawi tersimpan di dalam list yang anda lihat disini. Jadi sebenarnya kita tinggal mengubah daftar pada list tersebut. Tetapi hal tersebut bisa menjadi permasalahan apabila pada suatu kasus kita diharuskan menambahkan stopword secara dinamis.
+
+
+Library Sastrawi dapat mengatasi permasalahan tersebut, perhatikan kode dibawah ini:
+
+```
+from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory, StopWordRemover, ArrayDictionary
+from nltk.tokenize import word_tokenize 
+ 
+
+stop_factory = StopWordRemoverFactory().get_stop_words() #load defaul stopword
+more_stopword = ['daring', 'online'] #menambahkan stopword
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+kalimat = kalimat.translate(str.maketrans('','',string.punctuation)).lower()
+data = stop_factory + more_stopword #menggabungkan stopword
+ 
+dictionary = ArrayDictionary(data)
+str = StopWordRemover(dictionary)
+tokens = nltk.tokenize.word_tokenize(str.remove(kalimat))
+ 
+print(tokens)
+```
+
+**Output :**
+
+```
+['andi', 'kerap', 'transaksi', 'rutin', 'andi', 'belanja', 'praktis', 'murah']
+```
+
+# 4. Stemming
+Stemming adalah proses menghilangkan infleksi kata ke bentuk dasarnya, namun bentuk dasar tersebut tidak berarti sama dengan akar kata (root word). Misalnya kata “mendengarkan”, “dengarkan”, “didengarkan” akan ditransformasi menjadi kata “dengar”.
+
+## Stemming dengan NLTK (bahasa inggris)
+Ada banyak algoritma yang digunakan untuk stemming. Salah satu algoritma yang tertua dan paling populer adalah algoritma [Porter](https://tartarus.org/martin/PorterStemmer/). Algoritma ini tersedia dalam modul NLTK melalui ```kelasPorterStemmer()```.
+
+```
+from nltk.stem import PorterStemmer 
+   
+ps = PorterStemmer() 
+  
+kata = ["program", "programs", "programer", "programing", "programers"] 
+  
+for k in kata: 
+    print(k, " : ", ps.stem(k))
+```
+
+**Output :**
+
+```
+program  :  program
+programs  :  program
+programer  :  program
+programing  :  program
+programers  :  program
+```
+
+Selain Porter, NLTK juga mendukung algoritma Lancester, WordNet Lemmatizer, dan SnowBall. Sayangnya proses stemming Bahasa Indonesia pada modul NLTK belum didukung.
+
+## Stemming bahasa indonesia menggunakan Python Sastrawi
+Proses stemming antara satu bahasa dengan bahasa yang lain tentu berbeda. Contohnya pada teks berbahasa inggris, proses yang diperlukan hanya proses menghilangkan sufiks. Sedangkan pada teks berbahasa Indonesia semua kata imbuhan baik itu sufiks dan prefiks juga dihilangkan.
+
+```
+from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
+factory = StemmerFactory()
+stemmer = factory.create_stemmer()
+ 
+kalimat = "Andi kerap melakukan transaksi rutin secara daring atau online. Menurut Andi belanja online lebih praktis & murah."
+hasil = stemmer.stem(kalimat)
+print(hasil)
+```
+
+**Output :**
+
+```
+andi kerap laku transaksi rutin cara daring atau online turut andi belanja online lebih praktis murah
+```
+
+# Apakah kita memerlukan semua tahapan pada text preprocessing?
+Tidak ada aturan pasti yang membahas setiap tahapan pada text preprocessing. Tentu saja untuk memastikan hasil yang lebih baik dan konsisten semua tahapan harus dilakukan. Untuk memberi gambaran tentang apa yang minimal seharusnya dilakukan, saya telah menguraikan tahapan menjadi harus dilakukan, sebaiknya dilakukan, dan tergantung tugas. Perlu diingat, less is more, anda ingin menjaga pendekatan dengan seindah mungkin. Semakin banyak fitur atau tahapan yang anda tambahkan, semakin banyak pula lapisan yang anda harus kupas.
+
+* **Harus dilakukan** meliputi case folding (dapat tergantung tugas dalam beberapa kasus)
+
+* **Sebaiknya dilakukan** meliputi normalisasi sederhana — misalnya menstandarkan kata yang hampir sama
+
+* **Tergantung tugas** meliputi normalisasi tingkat lanjut — misalnya mengatasi kata yang tidak biasa, stopword removal dan stemming.
+
+
+# Punutup
+
+Dalam tulisan ini kita telah mengetahui langkah dasar dan praktis pada text preprocessing beserta library yang digunakan dalam python. Selanjutnya hasil dari text preprocessing dapat digunakan untuk analisa NLP yang lebih rumit, contohnya machine translation. Tidak semua kasus membutuhkan level preprocessing yang sama. Dalam beberapa kasus anda bisa menggunakan salah satu tahap dari preprocessing paling sederhana yaitu case folding. Namun semua tahap akan dibutuhkan apabila anda mempunyai dataset dengan level noise sangat tinggi.
+
+Masih ada teknik yang bisa dilakukan pada text preprocessing, tetapi sesuai kata pengantar diatas, tulisan ini hanya mengulas langkah dasar dan praktis dalam text preprocessing.
+
+Selamat mencoba dan bersenang-senang dengan NLP :)
+
+
