@@ -21,7 +21,8 @@ Langkah pertama yang perlu anda lakukan setelah menginstall NLTK adalah mengundu
 
 ```
 import nltk
-nltk.download()
+nltk.download('punkt')
+nltk.download('stopwords')
 ```
 
 Dokumentasi lengkap dari NLTK dapat anda baca [disini](https://www.nltk.org).
