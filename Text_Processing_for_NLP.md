@@ -374,4 +374,12 @@ Masih ada teknik yang bisa dilakukan pada text preprocessing, tetapi sesuai kata
 
 Selamat mencoba dan bersenang-senang dengan NLP :)
 
+> Baris kode diatas dapat anda temukan di github saya. https://github.com/verydwisetiawa03/Text_Preprocessing_NLP/blob/main/text_Processing_In_NLP.ipynb
+
+
+# Referensi
+
+1. Python Sastrawi (https://github.com/har07/PySastrawi).
+2. Natural Language Toolkit -NLTK (https://www.nltk.org).
+3. Matplotlib (https://matplotlib.org).
 
